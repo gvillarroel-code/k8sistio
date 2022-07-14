@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-svc
+  labels:
+    app: helloworld
+    service: helloworld
+spec:
+  ports:
+  - port: 9080 
+    name: http
+    targetPort: 5000
+  selector:
+    app: helloworld
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: apps
+  name: helloworld-deploy
+  labels:
+    app: helloworld
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: "v1"
+    spec:
+      containers:
+      - name: helloworld
+        resources:
+         requests:
+            memory: "256Mi"
+            cpu: "250m"
+         limits:
+            memory: "512Mi"
+            cpu: "500m"
+        image: "mspy:0.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /helloworld
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+---
+

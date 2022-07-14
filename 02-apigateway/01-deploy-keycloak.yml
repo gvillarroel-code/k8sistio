@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-config
+  namespace: keycloakns
+  labels:
+    app: keycloak
+data:
+    DB_SCHEMA: public
+    KEYCLOAK_USER: admin
+    KEYCLOAK_PASSWORD: password
+    DB_VENDOR: POSTGRES
+    DB_ADDR: postgresql.database
+    DB_PORT: "5432"
+    DB_DATABASE: keycloak_db
+    DB_USER: keycloak
+    DB_PASSWORD: kc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloakns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        version: "v1"
+    spec:
+      containers:
+        - name: keycloak
+          resources:
+           requests:
+              memory: "512Mi"
+              cpu: "250m"
+           limits:
+              memory: "1024Mi"
+              cpu: "500m"
+
+          image: jboss/keycloak:16.1.1
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: keycloak-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: keycloakns
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+    targetPort: 8080
+  selector:
+    app: keycloak
+---
+

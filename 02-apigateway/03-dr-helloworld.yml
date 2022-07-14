@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  labels:
+    kiali_wizard: request_routing
+  name: helloworld-svc
+  namespace: apps
+spec:
+  host: helloworld-svc.apps.svc.cluster.local
+  subsets:
+  - labels:
+      version: v1
+    name: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  labels:
+    kiali_wizard: request_routing
+  name: keycloak
+  namespace: keycloakns
+spec:
+  host: keycloak.keycloakns.svc.cluster.local
+  subsets:
+  - labels:
+      version: v1
+    name: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  labels:
+    kiali_wizard: request_routing
+  name: oauth2
+  namespace: oauth2-proxy
+spec:
+  host: oauth2-proxy.oauth2-proxy.svc.cluster.local
+  subsets:
+  - labels:
+      version: v1
+    name: v1
+

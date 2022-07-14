@@ -1,0 +1,30 @@
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  creationTimestamp: "2022-05-07T15:24:18Z"
+  generation: 5
+  labels:
+    kiali_wizard: request_routing
+  name: vs-helloworld
+  namespace: apps
+spec:
+  gateways:
+  - lab-gateway
+  hosts:
+  - 'helloworld.cluster.local'
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: helloworld-svc.apps.svc.cluster.local
+        port:
+          number: 9080
+      weight: 100
+
